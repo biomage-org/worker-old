@@ -65,9 +65,6 @@ COPY --from=builder /src /src
 ENV RENV_LIB=/src/lib
 RUN echo ".libPaths(c('$RENV_LIB', .libPaths()))" >> $(R RHOME)/etc/Rprofile.site
 
-RUN rm /usr/lib/x86_64-linux-gnu/libstdc++.so.6 && \
-    ln -s /src/r-miniconda/envs/r-reticulate/lib/libstdc++.so.6 /usr/lib/x86_64-linux-gnu/libstdc++.so.6
-
 # install runtime system deps
 # cleanup setup files
 RUN echo "python3-pip" >> sysdeps_run.txt && \
@@ -104,3 +101,6 @@ ADD tests ./tests
 COPY DESCRIPTION NAMESPACE work.R ./
 
 CMD watchmedo auto-restart --directory=. --pattern='*.R' --recursive -- Rscript work.R
+
+RUN rm /usr/lib/x86_64-linux-gnu/libstdc++.so.6 && \
+    ln -s /src/r-miniconda/envs/r-reticulate/lib/libstdc++.so.6 /usr/lib/x86_64-linux-gnu/libstdc++.so.6
