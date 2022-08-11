@@ -83,7 +83,7 @@ COPY DESCRIPTION NAMESPACE work.R ./
 
 # start app
 ENTRYPOINT ["bash", "/var/lib/watchfile/entrypoint.sh"]
-CMD ["Rscript", "work.R"]
+CMD ["LD_PRELOAD=/src/r-miniconda/envs/r-reticulate/lib/libstdc++.so", "Rscript", "work.R"]
 
 # ---------------------------------------------------
 # DEVELOPMENT BUILD
