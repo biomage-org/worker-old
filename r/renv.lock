@@ -575,6 +575,16 @@
         "Rcpp"
       ]
     },
+    "RcppTOML": {
+      "Package": "RcppTOML",
+      "Version": "0.1.7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f8a578aa91321ecec1292f1e2ffadeda",
+      "Requirements": [
+        "Rcpp"
+      ]
+    },
     "ResidualMatrix": {
       "Package": "ResidualMatrix",
       "Version": "1.6.0",
@@ -1615,6 +1625,16 @@
         "rprojroot"
       ]
     },
+    "here": {
+      "Package": "here",
+      "Version": "1.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "24b224366f9c2e7534d2344d10d59211",
+      "Requirements": [
+        "rprojroot"
+      ]
+    },
     "htmltools": {
       "Package": "htmltools",
       "Version": "0.5.1.1",
@@ -2408,13 +2428,15 @@
     },
     "reticulate": {
       "Package": "reticulate",
-      "Version": "1.20",
+      "Version": "1.25",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "30ab0ea8c8d3dd16a3fa06903449bbfb",
+      "Hash": "786b311743eb8cd347491f8f0a571941",
       "Requirements": [
         "Matrix",
         "Rcpp",
+        "RcppTOML",
+        "here",
         "jsonlite",
         "png",
         "rappdirs",

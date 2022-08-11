@@ -38,7 +38,7 @@ RUN R -e "renv::deactivate()"
 ENV RETICULATE_MINICONDA_PATH=/src/r-miniconda
 RUN R -e "reticulate::install_miniconda()" && \
     R -e "reticulate::conda_install(packages = 'umap-learn=0.5.3', python_version='3.10')" && \
-    CONDA_PATH=$(echo "cat(reticulate::conda_binary())" | Rscript -) && \
+    CONDA_PATH=$(Rscript -e "cat(reticulate::conda_binary())") && \
     $CONDA_PATH clean --force-pkgs-dirs -y
 
 # use renv::snapshot() while R dependency updates are quick to build
@@ -64,6 +64,9 @@ COPY --from=builder /src /src
 # add renv library to .libPaths
 ENV RENV_LIB=/src/lib
 RUN echo ".libPaths(c('$RENV_LIB', .libPaths()))" >> $(R RHOME)/etc/Rprofile.site
+
+RUN rm /src/r-miniconda/envs/r-reticulate/lib/libstdc++.so.6 && \
+     ln -s /src/r-miniconda/envs/r-reticulate/lib/libstdc++.so.6 /src/r-miniconda/envs/r-reticulate/lib/libstdc++.so.6
 
 # install runtime system deps
 # cleanup setup files
@@ -93,7 +96,7 @@ FROM common AS dev
 # install Radian for interactive R shell
 # also install watchdog to automatically restart
 # when source files change
-RUN pip install -U jedi radian PyYAML watchdog[watchmedo]
+RUN pip3 install -U jedi radian PyYAML watchdog[watchmedo]
 
 # add R package and runner
 ADD R ./R

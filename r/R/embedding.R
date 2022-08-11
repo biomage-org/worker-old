@@ -39,7 +39,7 @@ runEmbedding <- function(req, data) {
   table(data$samples)
 
   if (type == "pca") {
-    # Leaving this here to add parameters in the future. Won't leave uncommented to avoid recalculating PCA
+    # Leaving this here to add parameters in the future. Won't leave uncommented to avoid recal1culating PCA
     # RunPCA(data, npcs = 50, features = VariableFeatures(object=data), verbose=FALSE)
     df_embedding <- Embeddings(data, reduction = type)[, 1:2]
   } else if (type == "tsne") {
