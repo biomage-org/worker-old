@@ -196,7 +196,7 @@ generateTrajectoryGraph <- function(embedding_data, embedding_settings, clusteri
 fillNullForFilteredCells <- function(df, data) {
   df$cells_id <- data@meta.data$cells_id
   max_value <- max(data@meta.data$cells_id)
-  df <- df[order(df$cells_id), ]
+  # df <- df[order(df$cells_id), ]
 
   df <- df %>%
     tidyr::complete(cells_id = seq(0, max_value)) %>%
