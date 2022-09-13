@@ -88,7 +88,7 @@ getEmbedding <- function(config, method, reduction_type, num_pcs, data) {
       min.dist = config$minimumDistance,
       metric = config$distanceMetric,
       umap.method = "umap-learn",
-      seed.use = ULTIMATE_SEED
+      seed.use = 42
     )
   }
 
