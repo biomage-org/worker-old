@@ -39,9 +39,16 @@ runEmbedding <- function(req, data) {
   message("Active numPCs --> ", pca_nPCs)
   message("Number of cells/sample:")
   table(data$samples)
+  df_embedding <- list()
 
-  data <- getEmbedding(config, method, active.reduction, pca_nPCs, data)
-  df_embedding <- Seurat::Embeddings(data, reduction = method)
+  if (method == "pca") {
+    # Leaving this here to add parameters in the future. Won't leave uncommented to avoid recalculating PCA
+    # RunPCA(data, npcs = 50, features = VariableFeatures(object=data), verbose=FALSE)
+    df_embedding <- Seurat::Embeddings(data, reduction = method)[, 1:2]
+  } else {
+      data <- getEmbedding(config, method, active.reduction, pca_nPCs, data)
+      df_embedding <- Seurat::Embeddings(data, reduction = method)
+  }
 
   # Order embedding by cells id in ascending form
   df_embedding <- as.data.frame(df_embedding)
@@ -75,6 +82,7 @@ runEmbedding <- function(req, data) {
 getEmbedding <- function(config, method, reduction_type, num_pcs, data) {
   if (method == "tsne") {
     data <- Seurat::RunTSNE(data,
+      seed.use = 1,
       reduction = reduction_type,
       dims = 1:num_pcs,
       perplexity = config$perplexity,
@@ -82,13 +90,13 @@ getEmbedding <- function(config, method, reduction_type, num_pcs, data) {
     )
   } else if (method == "umap") {
     data <- Seurat::RunUMAP(data,
+      seed.use = 42,
       reduction = reduction_type,
       dims = 1:num_pcs,
       verbose = FALSE,
       min.dist = config$minimumDistance,
       metric = config$distanceMetric,
-      umap.method = "umap-learn",
-      seed.use = 42
+      umap.method = "umap-learn"
     )
   }
 
