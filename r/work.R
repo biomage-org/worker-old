@@ -211,16 +211,16 @@ create_app <- function(last_modified, data, fpath) {
     }
   )
   app$add_post(
-    path = "/v0/runTrajectoryAnalysis",
+    path = "/v0/runTrajectoryAnalysisPseudoTimeTask",
     FUN = function(req, res) {
-      result <- run_post(req, runTrajectoryAnalysis, data)
+      result <- run_post(req, runTrajectoryAnalysisPseudoTimeTask, data)
       res$set_body(result)
     }
   )
   app$add_post(
-    path = "/v0/runGenerateTrajectoryGraph",
+    path = "/v0/runTrajectoryAnalysisStartingNodesTask",
     FUN = function(req, res) {
-      result <- run_post(req, runGenerateTrajectoryGraph, data)
+      result <- run_post(req, runTrajectoryAnalysisStartingNodesTask, data)
       res$set_body(result)
     }
   )
@@ -232,9 +232,9 @@ create_app <- function(last_modified, data, fpath) {
     }
   )
   app$add_post(
-    path = "/v0/getImgPlot",
+    path = "/v0/GetNormalizedExpression",
     FUN = function(req, res) {
-      result <- run_post(req, createImgPlot, data)
+      result <- run_post(req, GetNormalizedExpression, data)
       res$set_body(result)
     }
   )

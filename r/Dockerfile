@@ -35,11 +35,10 @@ RUN R -e "renv::deactivate()"
 
 # clean conda and python umap-learn for RunUMAP
 ENV RETICULATE_MINICONDA_PATH=/src/r-miniconda
-RUN R -e "reticulate::install_miniconda()" 
-    # && \
-    # R -e "reticulate::conda_install(packages = 'umap-learn=0.5.3', python_version='3.10')" && \
-    # CONDA_PATH=$(echo "cat(reticulate::conda_binary())" | Rscript -) && \
-    # $CONDA_PATH clean --force-pkgs-dirs -y
+RUN R -e "reticulate::install_miniconda()" && \
+    R -e "reticulate::conda_install(packages = 'umap-learn=0.5.3', python_version='3.10')" && \
+    CONDA_PATH=$(echo "cat(reticulate::conda_binary())" | Rscript -) && \
+    $CONDA_PATH clean --force-pkgs-dirs -y
 RUN R -e "reticulate::conda_install(Sys.getenv('RETICULATE_MINICONDA_PATH'), packages='umap-learn')"
 RUN R -e "install.packages('covr')"
 RUN R -e "install.packages('xml2')"
@@ -75,6 +74,9 @@ RUN echo ".libPaths(c('$RENV_LIB', .libPaths()))" >> $(R RHOME)/etc/Rprofile.sit
 RUN echo "python3-pip" >> sysdeps_run.txt && \
     cat sysdeps_run.txt | xargs ./install_debian_packages.sh && \
     rm -rf *
+
+RUN rm /usr/lib/x86_64-linux-gnu/libstdc++.so.6 && \
+    ln -s /src/r-miniconda/envs/r-reticulate/lib/libstdc++.so.6 /usr/lib/x86_64-linux-gnu/libstdc++.so.6
 
 # ---------------------------------------------------
 # PRODUCTION BUILD
