@@ -103,7 +103,7 @@ test_that("RunTSNE uses the correct params", {
 
 })
 
-test_that("RunUMAP uses umap-learn with seed.use", {
+test_that("RunUMAP uses uwot with seed.use", {
 
   mock_RunUMAP <- mock(TRUE)
 
@@ -127,7 +127,7 @@ test_that("RunUMAP uses umap-learn with seed.use", {
    verbose = FALSE,
    min.dist = config$minimumDistance,
    metric = config$distanceMetric,
-   umap.method = "umap-learn",
+   umap.method = "uwot",
    seed.use = ULTIMATE_SEED))
 
 })
