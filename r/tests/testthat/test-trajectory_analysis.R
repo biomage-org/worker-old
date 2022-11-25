@@ -136,7 +136,6 @@ test_that("runTrajectoryAnalysisStartingNodesTask output has the expected format
   expect_type(root_nodes$connectedNodes[[1]], "double")
   # Second element is a list because it has length 1, so this way we ensure that
   # it is encoded in json as a list too
-  print(str(root_nodes$connectedNodes))
   expect_type(root_nodes$connectedNodes[[3]], "double")
 })
 

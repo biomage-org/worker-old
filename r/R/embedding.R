@@ -87,7 +87,7 @@ getEmbedding <- function(config, method, reduction_type, num_pcs, data) {
       verbose = FALSE,
       min.dist = config$minimumDistance,
       metric = config$distanceMetric,
-      umap.method = "uwot",
+      umap.method = "uwot-learn",
       seed.use = ULTIMATE_SEED
     )
   }
