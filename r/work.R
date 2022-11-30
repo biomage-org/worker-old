@@ -250,6 +250,7 @@ create_app <- function(last_modified, data, fpath) {
       res$set_body(result)
     }
   )
+
   return(app)
 }
 
