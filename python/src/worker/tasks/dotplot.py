@@ -1,4 +1,4 @@
-# Testing update image
+# Testing update image - update image
 
 import json
 
