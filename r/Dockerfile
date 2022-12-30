@@ -38,7 +38,7 @@ RUN R -q -e "renv::deactivate()"
 ENV RETICULATE_MINICONDA_PATH=/src/r-miniconda
 RUN R -q -e "reticulate::install_miniconda()" && \
     R -q -e "reticulate::conda_install(packages = 'umap-learn=0.5.3', python_version='3.10')" && \
-    CONDA_PATH=$(R -q -s -e "cat(reticulate::conda_binary())") && \
+    CONDA_PATH=$(R -q -e "cat(reticulate::conda_binary())") && \
     $CONDA_PATH clean --force-pkgs-dirs -y
 
 # use renv::snapshot() while R dependency updates are quick to build
