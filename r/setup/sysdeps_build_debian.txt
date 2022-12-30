@@ -18,4 +18,3 @@ procps
 libudunits2-dev
 libgdal-dev
 cmake
-libnlopt-dev
