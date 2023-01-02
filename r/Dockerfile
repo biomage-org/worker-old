@@ -33,13 +33,10 @@ RUN R -e "renv::restore(lockfile='renv.lock.init', library = '$RENV_LIB')" && \
 
 RUN R -e "renv::deactivate()"
 
-# install miniconda and python umap-learn for RunUMAP
-# clean conda
-ENV RETICULATE_MINICONDA_PATH=/src/r-miniconda
-RUN R -e "reticulate::install_miniconda()" && \
-    R -e "reticulate::conda_install(packages = 'umap-learn=0.5.3', python_version='3.10')" && \
-    CONDA_PATH=$(echo "cat(reticulate::conda_binary())" | Rscript -) && \
-    $CONDA_PATH clean --force-pkgs-dirs -y
+RUN apt-get update && \
+    apt-get -y install --no-install-recommends git python3-dev python3-venv && \
+    R -q -e "reticulate::virtualenv_create('r-reticulate')" && \
+    R -q -e "reticulate::py_install(c('umap-learn'), method = 'virtualenv', envname = 'r-reticulate')"
 
 # use renv::snapshot() while R dependency updates are quick to build
 COPY ./renv.lock .
@@ -56,7 +53,7 @@ RUN Rscript get_sysdeps_run.R
 # ---------------------------------------------------
 FROM rocker/r-ver:4.2.0 AS common
 WORKDIR /src/worker
-ENV RETICULATE_MINICONDA_PATH=/src/r-miniconda
+#ENV RETICULATE_MINICONDA_PATH=/src/r-miniconda
 
 # get source code and R packages
 COPY --from=builder /src /src
