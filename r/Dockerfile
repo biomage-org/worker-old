@@ -43,6 +43,7 @@ RUN R -e "reticulate::install_miniconda()" && \
 
 # use renv::snapshot() while R dependency updates are quick to build
 COPY ./renv.lock .
+RUN apt-get -y install libnlopt-dev
 RUN R -e "renv::restore(lockfile='renv.lock', library = '$RENV_LIB', clean = TRUE)" && \
     R -e 'root <- renv::paths$root(); unlink(root, recursive = TRUE)' && \
     strip --strip-debug $RENV_LIB/*/libs/*.so
