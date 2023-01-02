@@ -34,8 +34,9 @@ RUN R -e "renv::restore(lockfile='renv.lock.init', library = '$RENV_LIB')" && \
 RUN R -e "renv::deactivate()"
 
 RUN apt-get update && \
-    apt-get -y install --no-install-recommends git python3-dev python3-venv && \
-    R -q -e "reticulate::virtualenv_create('r-reticulate')" && \
+    apt-get -y install --no-install-recommends git && \
+    R -q -e "reticulate::install_python('3.10')" && \
+    R -q -e "reticulate::virtualenv_create('r-reticulate', python_version = '3.10')" && \
     R -q -e "reticulate::py_install(c('umap-learn'), method = 'virtualenv', envname = 'r-reticulate')"
 
 # use renv::snapshot() while R dependency updates are quick to build
