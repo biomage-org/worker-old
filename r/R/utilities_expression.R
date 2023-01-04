@@ -158,7 +158,7 @@ scaleExpression <- function(rawExpression) {
 
 getStats <- function(data) {
   stats_unsafe <- list(
-    rawMean = unname(colMeans(data$rawExpression, na.rm = TRUE)), 
+    rawMean = unname(colMeans(data$rawExpression, na.rm = TRUE)),
     rawStdev = unname(apply(data$rawExpression, 2,  sd, na.rm = TRUE)),
     truncatedMin = unname(apply(data$truncatedExpression, 2,  min, na.rm = TRUE)),
     truncatedMax = unname(apply(data$truncatedExpression, 2,  max, na.rm = TRUE))
@@ -181,7 +181,7 @@ getStats <- function(data) {
 sparsify <- function(expression) {
   data.table::setnafill(expression, fill = 0)
   sparse_matrix <-
-    Matrix::Matrix(Matrix::as.matrix(expression), sparse = T)
+    Matrix::Matrix(Matrix::as.matrix(expression), sparse = T, doDiag = F)
 
   return(sparse_matrix)
 }
