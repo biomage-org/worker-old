@@ -130,10 +130,10 @@ runTrajectoryAnalysisPseudoTimeTask <- function(req, data) {
 
   # Add 1 to indexes so they are 1-based
   root_indexes <- req$body$root_nodes + 1
-  
+
   # Translate the indexes to their ids
   root_ids <- node_ids[root_indexes]
-  
+
   cell_data <- monocle3::order_cells(cell_data, reduction_method = monocle_embedding_method, root_pr_nodes = root_ids)
 
   pseudotime <- as.data.frame(cell_data@principal_graph_aux@listData$UMAP$pseudotime)
@@ -173,7 +173,7 @@ generateTrajectoryGraph <- function(embedding_data, embedding_settings, clusteri
   clustering_controls <- list()
   if(embedding_method == "umap") {
     clustering_controls <- list(
-      metric = embedding_settings$method_settings$distanceMetric
+      metric = embedding_settings$methodSettings$distanceMetric
     )
   }
 
