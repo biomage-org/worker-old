@@ -2,8 +2,7 @@ import datetime
 import time
 from logging import INFO, basicConfig, info
 
-import aws_xray_sdk as xray
-from aws_xray_sdk.core import xray_recorder
+
 
 from .config import config
 from .consume_message import consume
@@ -22,22 +21,16 @@ def main():
         info("Experiment not yet assigned, waiting...")
         time.sleep(5)
 
-    # Disable X-Ray for initial setup so we don't end up
-    # with segment warnings before any message is sent
-    xray.global_sdk_config.set_sdk_enabled(False)
-
     last_activity = datetime.datetime.utcnow()
     task_factory = TaskFactory()
     info(
         f"Now listening for experiment {config.EXPERIMENT_ID}, waiting for work to do..."
     )
 
+    job_done = False
     while (
         datetime.datetime.utcnow() - last_activity
-    ).total_seconds() <= config.TIMEOUT or config.IGNORE_TIMEOUT:
-
-        # Disable X-Ray before message is identified and processed
-        xray.global_sdk_config.set_sdk_enabled(False)
+    ).total_seconds() <= config.TIMEOUT or config.IGNORE_TIMEOUT and not job_done:
 
         request = consume()
         if request:
@@ -47,10 +40,11 @@ def main():
             response.publish()
 
             last_activity = datetime.datetime.utcnow()
+            job_done = True
 
-        xray_recorder.end_segment()
 
-    info("Timeout exceeded, shutting down...")
+    if job_done: info(f"Job done at {last_activity}")
+    else: info("Timeout exceeded, shutting down...")
 
 
 main()
