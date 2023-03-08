@@ -7,7 +7,7 @@
     spec:
       containers:
       - name: "{{ .Release.Name }}-r"
-        image: "{{ .Values.r.image }}"
+        image: "{{ .Values.r.image.registry }}/{{ .Values.r.image.repository }}:{{ .Values.r.image.tag }}"
         volumeMounts:
         - name: 'data'
           mountPath: '/data'
@@ -24,7 +24,7 @@
           requests:
             memory: "{{ .Values.r.memoryRequest }}"
       - name: "{{ .Release.Name }}"
-        image: "{{ .Values.python.image }}"
+        image: "{{ .Values.python.image.registry }}/{{ .Values.python.image.repository }}:{{ .Values.python.image.tag }}"
         env:
         - name: AWS_ACCOUNT_ID
           value: "{{ .Values.myAccount.accountId }}"
@@ -50,7 +50,6 @@
         resources:
           requests:
             memory: "1Gi"
-{{- if eq .Values.myAccount.datadogEnabled "true" }}
       - name: datadog-agent
         image: datadog/agent
         env:
@@ -79,7 +78,6 @@
             fieldRef:
               apiVersion: v1
               fieldPath: spec.nodeName
-{{- end }}
       volumes:
       - name: 'data'
       - name: watch-script

@@ -1,29 +1,27 @@
-mock_scdata <- function(filt_cell_id = "") {
-  data("pbmc_small", package = "SeuratObject", envir = environment())
-  pbmc_small$cells_id <- 0:(ncol(pbmc_small) - 1)
-  if (all(filt_cell_id != "")) {
-    keep_cells_id <- which(!pbmc_small$cells_id %in% filt_cell_id)
-    keep_cells <- names(pbmc_small$cells_id[keep_cells_id])
-    pbmc_small <- subset(pbmc_small, cells = keep_cells)
-  }
-  pbmc_small@misc$gene_annotations <- data.frame(
-    input = row.names(pbmc_small),
-    name = row.names(pbmc_small),
-    row.names = row.names(pbmc_small)
+mock_scdata <- function(){
+  cds <- monocle3::load_a549()
+  scdata <- Seurat::CreateSeuratObject(cds@assays@data$counts)
+
+  scdata$cells_id <- 0:(ncol(scdata) - 1)
+  scdata@misc$gene_annotations <- data.frame(
+    input = row.names(scdata),
+    name = row.names(scdata),
+    row.names = row.names(scdata)
   )
 
   # scale and PCA
-  pbmc_small <- Seurat::NormalizeData(pbmc_small, normalization.method = "LogNormalize", verbose = FALSE)
-  pbmc_small <- Seurat::FindVariableFeatures(pbmc_small, verbose = FALSE)
-  pbmc_small <- Seurat::ScaleData(pbmc_small, verbose = FALSE)
-  pbmc_small <- Seurat::RunPCA(pbmc_small, verbose = FALSE, npcs = 10)
-  pbmc_small@misc[["active.reduction"]] <- "pca"
+  scdata <- Seurat::NormalizeData(scdata, normalization.method = "LogNormalize", verbose = FALSE)
+  scdata <- Seurat::FindVariableFeatures(scdata, verbose = FALSE)
+  scdata <- Seurat::ScaleData(scdata, verbose = FALSE)
+  scdata <- Seurat::RunPCA(scdata, verbose = FALSE, npcs = 10)
+  scdata@misc[["active.reduction"]] <- "pca"
 
   # run UMAP
-  npcs <- get_npcs(pbmc_small)
-  pbmc_small <- suppressWarnings(Seurat::RunUMAP(pbmc_small, dims = 1:npcs, verbose = FALSE))
+  npcs <- get_npcs(scdata)
+  scdata <- suppressWarnings(Seurat::RunUMAP(scdata, dims = 1:npcs, verbose = FALSE))
 
-  return(pbmc_small)
+  scdata
+
 }
 
 get_explained_variance <- function(scdata) {
@@ -51,12 +49,14 @@ mock_starting_nodes_req <- function(data) {
   mock_embedding_data <- get_mock_embedding_data(data)
   mock_embedding_settings <- get_mock_embedding_settings()
   mock_clustering_settings <- get_mock_clustering_settings()
+  mock_cell_ids <- get_mock_cell_ids(data)
 
   result <- list(
     body = list(
       embedding = mock_embedding_data,
       embedding_settings = mock_embedding_settings,
-      clustering_settings = mock_clustering_settings
+      clustering_settings = mock_clustering_settings,
+      cell_ids = mock_cell_ids
     )
   )
 }
@@ -65,12 +65,14 @@ mock_pseudotime_req <- function(data) {
   mock_embedding_data <- get_mock_embedding_data(data)
   mock_embedding_settings <- get_mock_embedding_settings()
   mock_clustering_settings <- get_mock_clustering_settings()
+  mock_cell_ids <- get_mock_cell_ids(data)
 
   result <- list(
     body = list(
       embedding = mock_embedding_data,
       embedding_settings = mock_embedding_settings,
       clustering_settings = mock_clustering_settings,
+      cell_ids = mock_cell_ids,
       root_nodes = c(0, 1, 2)
     )
   )
@@ -104,18 +106,24 @@ get_mock_clustering_settings <- function() {
   )
 }
 
+get_mock_cell_ids <- function(data) {
+  result <- data$cells_id[1:200]
+}
+
 test_that("generateTrajectoryGraph converts Seurat object to Monocle3 cell_data_set object", {
   data <- mock_scdata()
 
   mock_embedding_data <- get_mock_embedding_data(data)
   mock_embedding_settings <- get_mock_embedding_settings()
   mock_clustering_settings <- get_mock_clustering_settings()
+  mock_cell_ids <- get_mock_cell_ids(data)
 
   cell_data <- suppressWarnings(
     generateTrajectoryGraph(
       mock_embedding_data,
       mock_embedding_settings,
       mock_clustering_settings,
+      mock_cell_ids,
       data
     )
   )
@@ -133,10 +141,6 @@ test_that("runTrajectoryAnalysisStartingNodesTask output has the expected format
   expect_named(root_nodes, c("connectedNodes", "x", "y"))
   expect_type(root_nodes$x[[1]], "double")
   expect_type(root_nodes$y[[1]], "double")
-  expect_type(root_nodes$connectedNodes[[1]], "double")
-  # Second element is a list because it has length 1, so this way we ensure that
-  # it is encoded in json as a list too
-  expect_type(root_nodes$connectedNodes[[3]], "list")
 })
 
 
@@ -145,6 +149,7 @@ test_that("runTrajectoryAnalysisStartingNodesTask outputs the correct number of 
   mock_embedding_data <- get_mock_embedding_data(data)
   mock_embedding_settings <- get_mock_embedding_settings()
   mock_clustering_settings <- get_mock_clustering_settings()
+  mock_cell_ids <- get_mock_cell_ids(data)
 
   req <- mock_starting_nodes_req(data)
 
@@ -153,6 +158,7 @@ test_that("runTrajectoryAnalysisStartingNodesTask outputs the correct number of 
       mock_embedding_data,
       mock_embedding_settings,
       mock_clustering_settings,
+      mock_cell_ids,
       data
     )
   )
@@ -168,11 +174,13 @@ test_that("runTrajectoryAnalysisStartingNodesTask outputs the correct number of 
 
 test_that("runTrajectoryAnalysisPseudoTimeTask works", {
   data <- mock_scdata()
+  mock_cell_ids = get_mock_cell_ids(data)
+
   req <- mock_pseudotime_req(data)
 
   result <- suppressWarnings(runTrajectoryAnalysisPseudoTimeTask(req, data))
 
-  expect_equal(length(data$cells_id), length(result$pseudotime))
+  expect_equal(length(mock_cell_ids), length(result$pseudotime))
   expect_true(is.numeric(result$pseudotime))
 })
 

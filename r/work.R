@@ -19,11 +19,13 @@ load_data <- function(fpath) {
         f <- readRDS(fpath)
         loaded <- TRUE
         length <- dim(f)
-        
+
         message(
           "Data successfully loaded, dimensions",
           length[1], "x", length[2]
         )
+
+        print(sessionInfo())
 
         return(f)
       },
@@ -180,6 +182,20 @@ create_app <- function(last_modified, data, fpath) {
       res$set_body(result)
     }
   )
+    app$add_post(
+    path = "/v0/getNGenes",
+    FUN = function(req, res) {
+      result <- run_post(req, getNGenes, data)
+      res$set_body(result)
+    }
+  )
+  app$add_post(
+    path = "/v0/getNUmis",
+    FUN = function(req, res) {
+      result <- run_post(req, getNUmis, data)
+      res$set_body(result)
+    }
+  )
   app$add_post(
     path = "/v0/runExpression",
     FUN = function(req, res) {
@@ -247,6 +263,13 @@ create_app <- function(last_modified, data, fpath) {
     path = "/v0/GetNormalizedExpression",
     FUN = function(req, res) {
       result <- run_post(req, GetNormalizedExpression, data)
+      res$set_body(result)
+    }
+  )
+  app$add_post(
+    path = "/v0/ScTypeAnnotate",
+    FUN = function(req, res) {
+      result <- run_post(req, ScTypeAnnotate, data)
       res$set_body(result)
     }
   )
