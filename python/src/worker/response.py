@@ -1,7 +1,7 @@
 import gzip
 import io
 import json
-from logging import info
+from logging import info, error
 
 import aws_xray_sdk as xray
 import boto3
@@ -101,13 +101,16 @@ class Response:
 
     @xray_recorder.capture("Response.publish")
     def publish(self):
-        info(f"Request {self.request['ETag']} processed, response:")
+        info(f"Request {self.request['ETag']} processed")
 
         if not self.error and self.cacheable:
             response_data = self._construct_data_for_upload()
 
             info("Uploading response to S3")
             self._upload(response_data)
+
+        if self.error:
+            error(f"{self.request['ETag']} {self.error}")
 
         info("Sending socket.io message to clients subscribed to work response")
         return self._send_notification()
