@@ -51,6 +51,25 @@ You should be prompted to run the workspace inside a container. Accept this. Onc
 
 To make sure everything works, try to access http://localhost:4000/health from your browser.This should give you a 200 HTTP response, which means the server is up.
 
+### Local development and adding dependencies
+
+First make sure the project library is synchronized with the lockfile:
+
+```R
+# inside r/ project folder
+renv::restore()
+```
+
+**NOTE**: To restore Bioconductor packages your R version needs to be the same as in the [Dockerfile](r/Dockerfile) (4.2.0). And install them with `renv::install("bioc::package_name")`.
+`install.packages(...)` and use them (e.g. `dplyr::left_join(...)`) as you normally would. Then, update the lockfile:
+
+```R
+renv::snapshot()
+```
+
+commit the changes to the lockfile (used to install dependencies in the Dockerfile). See [renv docs](https://rstudio.github.io/renv/) for more info.
+
+
 ### Running R worker Tests
 
 _With R Studio_

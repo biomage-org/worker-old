@@ -116,7 +116,7 @@ test_that("add_gene_symbols adds gene symbols to the count matrix", {
   active_assay <- "RNA"
 
   scale_data <- data.table::as.data.table(data[[active_assay]]@scale.data, keep.rownames = "input")
-  scale_data <- add_gene_symbols(scale_data, data)
+  scale_data <- add_gene_symbols(scale_data, data, 'mouse')
 
   expect_equal(colnames(scale_data)[2], "original_name")
 })
@@ -135,7 +135,7 @@ test_that("add_gene_symbols produces an error if there are no gene symbols in th
   annot_mod$original_name <- annot_mod$input
   data@misc$gene_annotations <- annot_mod
 
-  expect_error(add_gene_symbols(scale_data, data), "Features file doesn't contain gene symbols.")
+  expect_error(add_gene_symbols(scale_data, data, 'mouse'), "Features file doesn't contain gene symbols.")
 })
 
 
@@ -144,7 +144,7 @@ test_that("collapse_genes collapses duplicated gene symbols", {
   active_assay <- "RNA"
 
   scale_data <- data.table::as.data.table(data[[active_assay]]@scale.data, keep.rownames = "input")
-  scale_data <- add_gene_symbols(scale_data, data)
+  scale_data <- add_gene_symbols(scale_data, data, 'mouse')
 
   # duplicate first 5 rows
   scale_data_dup <- rbind(scale_data, scale_data[1:5, ])
@@ -161,7 +161,7 @@ test_that("format_matrix produces a matrix in the expected format", {
   active_assay <- "RNA"
 
   scale_data <- data.table::as.data.table(data[[active_assay]]@scale.data, keep.rownames = "input")
-  scale_data <- add_gene_symbols(scale_data, data)
+  scale_data <- add_gene_symbols(scale_data, data, 'mouse')
   scale_data <- collapse_genes(scale_data)
 
   scale_data_formatted <- format_matrix(scale_data)
@@ -180,7 +180,7 @@ test_that("run_sctype produces adds cluster annotations as a new metadata column
   species <- req$body$species
   cell_sets <- req$body$cellSets
 
-  scale_data <- get_formatted_data(data, active_assay)
+  scale_data <- get_formatted_data(data, active_assay, species)
   parsed_cellsets <- parse_cellsets(cell_sets)
   data <- add_clusters(data, parsed_cellsets)
   data[[active_assay]]@scale.data <- scale_data
@@ -200,7 +200,7 @@ test_that("run_sctype produces correct snapshots", {
   species <- req$body$species
   cell_sets <- req$body$cellSets
 
-  scale_data <- get_formatted_data(data, active_assay)
+  scale_data <- get_formatted_data(data, active_assay, species)
   parsed_cellsets <- parse_cellsets(cell_sets)
   data <- add_clusters(data, parsed_cellsets)
   data[[active_assay]]@scale.data <- scale_data

@@ -240,7 +240,7 @@ test_that("format_sctype_cell_sets correctly format cellset to be sent to the AP
 
   expected_cell_class_names <- c("key", "name", "rootNode", "type", "children")
 
-  scale_data <- get_formatted_data(data, active_assay)
+  scale_data <- get_formatted_data(data, active_assay, species)
   parsed_cellsets <- parse_cellsets(cell_sets)
   data <- add_clusters(data, parsed_cellsets)
   data[[active_assay]]@scale.data <- scale_data

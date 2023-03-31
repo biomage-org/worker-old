@@ -1,3 +1,5 @@
+library(org.Hs.eg.db)
+
 #' Annotate cells with ScType
 #'
 #' This function uses [ScType](https://github.com/IanevskiAleksandr/sc-type)
@@ -35,7 +37,7 @@ ScTypeAnnotate <- function(req, data) {
     active_assay <- "RNA"
   }
 
-  scale_data <- get_formatted_data(data, active_assay)
+  scale_data <- get_formatted_data(data, active_assay, species)
 
   parsed_cellsets <- parse_cellsets(cell_sets)
   data <- add_clusters(data, parsed_cellsets)
@@ -70,10 +72,10 @@ ScTypeAnnotate <- function(req, data) {
 #' @export
 #'
 #' @examples
-get_formatted_data <- function(scdata, active_assay) {
+get_formatted_data <- function(scdata, active_assay, species) {
   scale_data <- data.table::as.data.table(scdata[[active_assay]]@scale.data, keep.rownames = "input")
 
-  scale_data <- add_gene_symbols(scale_data, scdata)
+  scale_data <- add_gene_symbols(scale_data, scdata, species)
 
   scale_data <- collapse_genes(scale_data)
 
@@ -91,11 +93,12 @@ get_formatted_data <- function(scdata, active_assay) {
 #'
 #' @param scale_data data.frame. Count matrix
 #' @param scdata Seurat object
+#' @param species string. Species information. Either "human" or "mouse"
 #'
 #' @return count matrix with gene symbols in the new column "original_name"
 #' @export
 #'
-add_gene_symbols <- function(scale_data, scdata) {
+add_gene_symbols <- function(scale_data, scdata, species) {
   annot <- data.table::as.data.table(scdata@misc$gene_annotations)
   annot <- annot[, .(input, original_name)]
 
@@ -109,10 +112,15 @@ add_gene_symbols <- function(scale_data, scdata) {
     )
   }
 
+  if (species == "mouse") {
+    annot$original_name <- map_mouse_to_human_symbols(annot$original_name)
+  }
+
   scale_data <- annot[scale_data, on = .(input)]
 
   return(scale_data)
 }
+
 
 #' Collapse gene symbols
 #'
@@ -206,4 +214,24 @@ run_sctype <- function(data, active_assay, tissue, species) {
   }
 
   return(data)
+}
+
+
+#' Map mouse gene symbols to human gene symbols
+#'
+#' This function maps mouse gene symbols to human gene symbols using the
+#' org.Hs.eg.db package.
+#'
+#' @param gene_symbols vector of mouse gene symbols
+#'
+#' @return vector of human gene symbols
+#' @export
+#'
+map_mouse_to_human_symbols <- function(gene_symbols) {
+  mapped_symbols <- mapIds(org.Hs.eg.db::org.Mm.eg.db,
+                           keys = gene_symbols,
+                           column = "SYMBOL",
+                           keytype = "SYMBOL",
+                           multiVals = "first")
+  return(mapped_symbols)
 }

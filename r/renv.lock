@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.2.2",
+    "Version": "4.2.0",
     "Repositories": [
       {
         "Name": "BioCsoft",
@@ -27,6 +27,9 @@
         "URL": "https://cloud.r-project.org"
       }
     ]
+  },
+  "Bioconductor": {
+    "Version": "3.15"
   },
   "Packages": {
     "AnnotationDbi": {
@@ -757,7 +760,7 @@
       "RemoteRef": "master",
       "RemoteSha": "9652bddba522d2f00ec5f8f0f8227761b9a6afd2",
       "Remotes": "welch-lab/liger, hms-dbmi/conos, immunogenomics/harmony,\n    immunogenomics/presto, satijalab/seurat-data, velocyto-team/velocyto.R,\n    SaskiaFreytag/schex@031320d, cole-trapnell-lab/monocle3,\n    mojaveazure/seurat-disk, powellgenomicslab/Nebulosa,\n    atakanekiz/CIPR-Package, prabhakarlab/Banksy",
-      "Hash": "650b936fe198250f5c32eb74d0a537a7",
+      "Hash": "f24c07d780c21f489c9d62e5bcfcb5dc",
       "Requirements": [
         "BiocManager",
         "Matrix",
@@ -2108,6 +2111,15 @@
         "Rcpp",
         "stringi",
         "zip"
+      ]
+    },
+    "org.Hs.eg.db": {
+      "Package": "org.Hs.eg.db",
+      "Version": "3.15.0",
+      "Source": "Bioconductor",
+      "Hash": "ea73036cd4946b4577e0aa9e51d0a61b",
+      "Requirements": [
+        "AnnotationDbi"
       ]
     },
     "parallelly": {
