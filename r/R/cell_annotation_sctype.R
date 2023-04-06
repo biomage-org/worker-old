@@ -226,7 +226,7 @@ run_sctype <- function(data, active_assay, tissue, species) {
 #' @export
 #'
 map_mouse_to_human_symbols <- function(gene_symbols) {
-  mapped_symbols <- mapIds(org.Hs.eg.db::org.Mm.eg.db,
+  mapped_symbols <- AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db,
                            keys = gene_symbols,
                            column = "SYMBOL",
                            keytype = "SYMBOL",
