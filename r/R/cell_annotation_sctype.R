@@ -1,5 +1,3 @@
-library(org.Hs.eg.db)
-
 #' Annotate cells with ScType
 #'
 #' This function uses [ScType](https://github.com/IanevskiAleksandr/sc-type)
