@@ -19,7 +19,8 @@ getGeneExpression <- function(data, genes, downsample_cell_ids) {
   # (the rest are set to expression 0 to optimize space)
   cell_ids_to_return <- data@meta.data$cells_id
 
-  # If downsample_cell_ids, replace data and expression_values with the downsampled version
+  # If downsample_cell_ids exist, replace expression_values with the downsample subset of expressions
+  # This includes rawExpression, truncatedExpression and zScore inside expression_values
   if (!missing(downsample_cell_ids)) {
     matched_cell_ids <- match(downsample_cell_ids, data@meta.data$cells_id)
 
