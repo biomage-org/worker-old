@@ -23,7 +23,7 @@ getGeneExpression <- function(data, genes, downsample_cell_ids) {
   if (!missing(downsample_cell_ids)) {
     matched_cell_ids <- match(downsample_cell_ids, data@meta.data$cells_id)
 
-    expression_values <- lapply(expression_values, \(dt) dt[matched_cell_ids, ] )
+    expression_values <- lapply(expression_values, \(dt) dt[matched_cell_ids, ])
 
     cell_ids_to_return <- downsample_cell_ids
   }
